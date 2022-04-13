@@ -12,9 +12,9 @@
 
 ## 相关文档
 
-- https://go-kratos.dev
-- https://entgo.io
-- https://domain-driven-design.org/
+- [kratos](https://go-kratos.dev)
+- [entgo](https://entgo.io)
+- [ddd](https://domain-driven-design.org/)
 
 ## 使用说明
 
