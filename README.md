@@ -14,7 +14,7 @@
 
 - [kratos](https://go-kratos.dev)
 - [entgo](https://entgo.io)
-- [ddd](https://domain-driven-design.org/)
+- [domain driver design (ddd)](https://domain-driven-design.org/)
 
 ## 使用说明
 
