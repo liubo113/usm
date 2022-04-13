@@ -2,7 +2,7 @@
 
 ## 模型图
 
-[模型图](./doc/ddd.png)
+![ddd_image](./doc/ddd.png)
 
 ## 相关文档
 
