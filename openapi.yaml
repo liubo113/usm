@@ -1,0 +1,294 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Account API
+    version: 0.0.1
+paths:
+    /account/v1/users:
+        get:
+            tags:
+                - Account
+            description: 查询用户列表
+            operationId: Account_ListUsers
+            parameters:
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: offset
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUsersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Account
+            description: 创建用户
+            operationId: Account_CreateUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /account/v1/users/{id}:
+        get:
+            tags:
+                - Account
+            description: 查询用户
+            operationId: Account_GetUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Account
+            description: 更新用户信息
+            operationId: Account_UpdateUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/User'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Account
+            description: 删除用户
+            operationId: Account_DeleteUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /account/v1/users:authenticate:
+        post:
+            tags:
+                - Account
+            description: 认证
+            operationId: Account_Authenticate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AuthenticateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AuthenticateResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /account/v1/users:set-password:
+        post:
+            tags:
+                - Account
+            description: 设置用户密码
+            operationId: Account_SetUserPassword
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetUserPasswordRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SetUserPasswordResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+components:
+    schemas:
+        AuthenticateRequest:
+            type: object
+            properties:
+                basicAuth:
+                    $ref: '#/components/schemas/AuthenticateRequest_BasicAuth'
+        AuthenticateRequest_BasicAuth:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+        AuthenticateResponse:
+            type: object
+            properties: {}
+        CreateUserRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                email:
+                    type: string
+        DeleteUserResponse:
+            type: object
+            properties: {}
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        ListUsersResponse:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
+        SetUserPasswordRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                password:
+                    type: string
+        SetUserPasswordResponse:
+            type: object
+            properties: {}
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        UpdateUserRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                email:
+                    type: string
+        User:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 用户 ID
+                    format: int64
+                username:
+                    type: string
+                    description: 用户名，全局唯一
+                email:
+                    type: string
+                    description: 邮箱
+                createTime:
+                    type: integer
+                    description: 创建时间
+                    format: int64
+                updateTime:
+                    type: integer
+                    description: 更新时间
+                    format: int64
+tags:
+    - name: Account
