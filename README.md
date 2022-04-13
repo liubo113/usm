@@ -4,6 +4,12 @@
 
 ![ddd_image](./doc/ddd.png)
 
+### 名词定义
+
+- DTO (Data Transfer Object), 数据传输对象，定义在 api 目录中，由 protobuf 文件生成
+- BO (Business Object), 业务对象，定义在 internal/biz/repo 目录中
+- PO (Persistent Object)，持久化对象，定义在 internal/data/ent 目录中，由 schema 文件生成
+
 ## 相关文档
 
 - https://go-kratos.dev
@@ -15,9 +21,10 @@
 ```shell
 make help
 ```
+
 ## 目录结构
 
-```
+```text
 ├── api # api 目录，通过 IDL 文件可以生成若干 stub 代码和 openapi 文档
 │   └── account # 按照服务/模块作为目录进行划分
 │       └── v1 # 服务/模块必须包含版本号
