@@ -2,7 +2,7 @@
 
 ## 模型图
 
-![ddd_image](./doc/ddd.svg)
+![ddd_image](./doc/ddd.png)
 
 ### 名词定义
 
