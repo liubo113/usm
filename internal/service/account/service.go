@@ -29,6 +29,7 @@ func NewService(uc *acctuc.Usecase, logger log.Logger) *Service {
 }
 
 func (s *Service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.User, error) {
+	log.Infof("create user %s, email=%s", req.Username, req.Email)
 	u, err := s.uc.CreateUser(ctx, &repo.User{
 		Username: req.Username,
 		Email:    req.Email,
@@ -44,6 +45,7 @@ func (s *Service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*p
 }
 
 func (s *Service) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.User, error) {
+	log.Infof("update user %d, email=%s", req.Id, req.Email)
 	u, err := s.uc.UpdateUser(ctx, &repo.User{
 		ID:    int(req.Id),
 		Email: req.Email,
@@ -55,21 +57,24 @@ func (s *Service) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*p
 }
 
 func (s *Service) SetUserPassword(ctx context.Context, req *pb.SetUserPasswordRequest) (*pb.SetUserPasswordResponse, error) {
-	if err := s.uc.SetUserPassword(ctx, req.Id, req.Password); err != nil {
+	log.Infof("user %d set password", req.Id)
+	if err := s.uc.SetUserPassword(ctx, int(req.Id), req.Password); err != nil {
 		return nil, err
 	}
 	return &pb.SetUserPasswordResponse{}, nil
 }
 
 func (s *Service) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
-	if err := s.uc.DeleteUser(ctx, req.Id); err != nil {
+	log.Infof("delete user %d", req.Id)
+	if err := s.uc.DeleteUser(ctx, int(req.Id)); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteUserResponse{}, nil
 }
 
 func (s *Service) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User, error) {
-	u, err := s.uc.GetUser(ctx, req.Id)
+	log.Infof("get user %d", req.Id)
+	u, err := s.uc.GetUser(ctx, int(req.Id))
 	if err != nil {
 		if err == biz.ErrResourceNotFound {
 			return nil, pb.ErrorUserNotFound("user %d not found", req.Id)
@@ -80,6 +85,7 @@ func (s *Service) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User
 }
 
 func (s *Service) ListUsers(ctx context.Context, req *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
+	log.Infof("list users, offset=%d, limit=%d", req.Offset, req.Limit)
 	us, err := s.uc.ListUsers(ctx, int(req.Offset), int(req.Limit))
 	if err != nil {
 		return nil, err
@@ -97,6 +103,7 @@ func (s *Service) Authenticate(ctx context.Context, req *pb.AuthenticateRequest)
 		return nil, status.Errorf(codes.InvalidArgument, "invalid auth method")
 	case *pb.AuthenticateRequest_BasicAuth_:
 		auth := method.BasicAuth
+		log.Infof("user %s authenticate, method: basic auth", auth.Username)
 		u, err := s.uc.GetUserByUsername(ctx, auth.GetUsername())
 		if err != nil {
 			return nil, err

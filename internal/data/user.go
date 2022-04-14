@@ -23,8 +23,8 @@ func NewUserRepo(data *Data, logger log.Logger) repo.UserRepo {
 	}
 }
 
-func (r *userRepo) CreateUser(ctx context.Context, user *repo.User) (*repo.User, error) {
-	u, err := r.data.db.User.
+func (r *userRepo) Create(ctx context.Context, user *repo.User) (*repo.User, error) {
+	u, err := r.data.DB(ctx).User.
 		Create().
 		SetUsername(user.Username).
 		SetEmail(user.Email).
@@ -36,12 +36,15 @@ func (r *userRepo) CreateUser(ctx context.Context, user *repo.User) (*repo.User,
 		}
 		return nil, err
 	}
-	return bizUserFromEntity(u), nil
+	return r.userFromEntity(u), nil
 }
 
-func (r *userRepo) UpdateUser(ctx context.Context, user *repo.User) (*repo.User, error) {
-	u, err := r.data.db.User.Get(ctx, int64(user.ID))
+func (r *userRepo) Update(ctx context.Context, user *repo.User) (*repo.User, error) {
+	u, err := r.data.DB(ctx).User.Get(ctx, int64(user.ID))
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, biz.ErrResourceNotFound
+		}
 		return nil, err
 	}
 	u, err = u.Update().
@@ -50,50 +53,26 @@ func (r *userRepo) UpdateUser(ctx context.Context, user *repo.User) (*repo.User,
 	if err != nil {
 		return nil, err
 	}
-	return bizUserFromEntity(u), nil
+	return r.userFromEntity(u), nil
 }
 
-func (r *userRepo) SetUserPassword(ctx context.Context, id int64, password string) error {
-	u, err := r.data.db.User.Get(ctx, id)
-	if err != nil {
-		return err
-	}
-	_, err = u.Update().
-		SetPassword(password).
-		Save(ctx)
-	return err
+func (r *userRepo) Delete(ctx context.Context, id int) error {
+	return r.data.DB(ctx).User.DeleteOneID(int64(id)).Exec(ctx)
 }
 
-func (r *userRepo) DeleteUser(ctx context.Context, id int64) error {
-	return r.data.db.User.DeleteOneID(id).Exec(ctx)
-}
-
-func (r *userRepo) GetUser(ctx context.Context, id int64) (*repo.User, error) {
-	u, err := r.data.db.User.Get(ctx, id)
+func (r *userRepo) Get(ctx context.Context, id int) (*repo.User, error) {
+	u, err := r.data.DB(ctx).User.Get(ctx, int64(id))
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, biz.ErrResourceNotFound
 		}
 		return nil, err
 	}
-	return bizUserFromEntity(u), nil
+	return r.userFromEntity(u), nil
 }
 
-func (r *userRepo) GetUserByUsername(ctx context.Context, username string) (*repo.User, error) {
-	u, err := r.data.db.User.Query().Where(
-		user.Username(username),
-	).First(ctx)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, biz.ErrResourceNotFound
-		}
-		return nil, err
-	}
-	return bizUserFromEntity(u), nil
-}
-
-func (r *userRepo) EnableUser(ctx context.Context, id int64) error {
-	u, err := r.data.db.User.Get(ctx, id)
+func (r *userRepo) Enable(ctx context.Context, id int) error {
+	u, err := r.data.DB(ctx).User.Get(ctx, int64(id))
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return biz.ErrResourceNotFound
@@ -104,8 +83,8 @@ func (r *userRepo) EnableUser(ctx context.Context, id int64) error {
 	return err
 }
 
-func (r *userRepo) DisableUser(ctx context.Context, id int64) error {
-	u, err := r.data.db.User.Get(ctx, id)
+func (r *userRepo) Disable(ctx context.Context, id int) error {
+	u, err := r.data.DB(ctx).User.Get(ctx, int64(id))
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return biz.ErrResourceNotFound
@@ -116,19 +95,52 @@ func (r *userRepo) DisableUser(ctx context.Context, id int64) error {
 	return err
 }
 
-func (r *userRepo) ListUsers(ctx context.Context, offset, limit int) ([]*repo.User, error) {
-	ents, err := r.data.db.User.Query().Offset(offset).Limit(limit).All(ctx)
+func (r *userRepo) List(ctx context.Context, offset, limit int) ([]*repo.User, error) {
+	if offset < 0 {
+		offset = 0
+	}
+	if limit <= 0 {
+		limit = 20
+	}
+	ents, err := r.data.DB(ctx).User.Query().Offset(offset).Limit(limit).All(ctx)
 	if err != nil {
 		return nil, err
 	}
 	users := make([]*repo.User, 0, len(ents))
 	for _, u := range ents {
-		users = append(users, bizUserFromEntity(u))
+		users = append(users, r.userFromEntity(u))
 	}
 	return users, nil
 }
 
-func bizUserFromEntity(u *ent.User) *repo.User {
+func (r *userRepo) SetPassword(ctx context.Context, id int, password string) error {
+	u, err := r.data.DB(ctx).User.Get(ctx, int64(id))
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return biz.ErrResourceNotFound
+		}
+		return err
+	}
+	_, err = u.Update().
+		SetPassword(password).
+		Save(ctx)
+	return err
+}
+
+func (r *userRepo) GetByUsername(ctx context.Context, username string) (*repo.User, error) {
+	u, err := r.data.DB(ctx).User.Query().Where(
+		user.Username(username),
+	).First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, biz.ErrResourceNotFound
+		}
+		return nil, err
+	}
+	return r.userFromEntity(u), nil
+}
+
+func (r *userRepo) userFromEntity(u *ent.User) *repo.User {
 	return &repo.User{
 		ID:         int(u.ID),
 		Username:   u.Username,
