@@ -1,5 +1,7 @@
 package repo
 
+//go:generate mockgen -destination=./mock/user.go -package=mock usm/internal/biz/repo UserRepo
+
 import (
 	"context"
 	"time"

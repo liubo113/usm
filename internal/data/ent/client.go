@@ -15,7 +15,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-
 // Client is the client that holds all ent builders.
 type Client struct {
 	config
