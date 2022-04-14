@@ -7,19 +7,15 @@ import (
 	"usm/internal/biz/repo"
 	"usm/internal/data/ent"
 	"usm/internal/data/ent/user"
-
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 type userRepo struct {
 	data *Data
-	log  *log.Helper
 }
 
-func NewUserRepo(data *Data, logger log.Logger) repo.UserRepo {
+func NewUserRepo(data *Data) repo.UserRepo {
 	return &userRepo{
 		data: data,
-		log:  log.NewHelper(logger),
 	}
 }
 

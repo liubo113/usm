@@ -25,7 +25,7 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 		return nil, nil, err
 	}
 	transaction := data.NewTransaction(dataData)
-	userRepo := data.NewUserRepo(dataData, logger)
+	userRepo := data.NewUserRepo(dataData)
 	usecase := account.NewUsecase(transaction, userRepo)
 	service := account2.NewService(usecase, logger)
 	httpServer := server.NewHTTPServer(confServer, service, logger)
