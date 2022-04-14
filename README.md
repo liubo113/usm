@@ -2,13 +2,18 @@
 
 ## 模型图
 
-![ddd_image](./doc/ddd.png)
+![ddd_image](./doc/ddd.svg)
 
 ### 名词定义
 
-- DTO (Data Transfer Object), 数据传输对象，定义在 api 目录中，由 protobuf 文件生成
-- BO (Business Object), 业务对象，定义在 internal/biz/repo 目录中
-- PO (Persistent Object)，持久化对象，定义在 internal/data/ent 目录中，由 schema 文件生成
+- DTO (Data Transfer Object), 数据传输对象
+- BO (Business Object), 业务对象
+- PO (Persistent Object)，持久化对象，对应 Entity
+- Service API 定义的实现
+- Usecase Service 的核心业务逻辑
+- Repository 单个资源数据持久化，定义在 biz 层，实现在 data 层
+
+采用依赖倒置原则，service，data 依赖 biz，biz 层定义 BO 和 repo 由 data 层实现
 
 ## 相关文档
 
